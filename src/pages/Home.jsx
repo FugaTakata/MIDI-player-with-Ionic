@@ -64,6 +64,10 @@ const Home = () => {
   };
 
   const handleClick = () => {
+    const ctx = new AudioContext();
+    const emptySource = ctx.createBufferSource();
+    emptySource.start();
+    emptySource.stop();
     const synths = [];
     const now = Tone.now() + 0.5;
     midi.tracks.forEach((track) => {
