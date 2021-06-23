@@ -63,8 +63,34 @@ const Home = () => {
     // });
   };
 
-  const handleClick = async () => {
-    await Tone.start();
+  const handleClick = () => {
+    const synths = [];
+    const now = Tone.now() + 0.5;
+    midi.tracks.forEach((track) => {
+      console.log(track.instrument.name, track.instrument.number);
+      // if (track.instrument.family === "piano") {
+      //create a synth for each track
+      const synth = new Tone.PolySynth(Tone.Synth, {
+        envelope: {
+          attack: 0.02,
+          decay: 0.1,
+          sustain: 0.3,
+          release: 1,
+        },
+      }).toDestination();
+      synths.push(synth);
+      //schedule all of the events
+      track.notes.forEach((note) => {
+        // console.log(note);
+        synth.triggerAttackRelease(
+          note.name,
+          note.duration,
+          note.time + now,
+          note.velocity
+        );
+      });
+      // }
+    });
   };
 
   // useEffect(() => {
@@ -108,39 +134,39 @@ const Home = () => {
   //   // player.autostart = true;
   // }, [midi]);
 
-  useEffect(() => {
-    if (!midi) {
-      return;
-    }
-    const synths = [];
-    const now = Tone.now() + 0.5;
-    midi.tracks.forEach((track) => {
-      console.log(track.instrument.name, track.instrument.number);
-      // if (track.instrument.family === "piano") {
-      //create a synth for each track
-      const synth = new Tone.PolySynth(Tone.Synth, {
-        envelope: {
-          attack: 0.02,
-          decay: 0.1,
-          sustain: 0.3,
-          release: 1,
-        },
-      }).toDestination();
-      synths.push(synth);
-      //schedule all of the events
-      track.notes.forEach((note) => {
-        // console.log(note);
-        synth.triggerAttackRelease(
-          note.name,
-          note.duration,
-          note.time + now,
-          note.velocity
-        );
-      });
-      // }
-    });
-    console.log(synths);
-  }, [midi]);
+  // useEffect(() => {
+  //   if (!midi) {
+  //     return;
+  //   }
+  //   const synths = [];
+  //   const now = Tone.now() + 0.5;
+  //   midi.tracks.forEach((track) => {
+  //     console.log(track.instrument.name, track.instrument.number);
+  //     // if (track.instrument.family === "piano") {
+  //     //create a synth for each track
+  //     const synth = new Tone.PolySynth(Tone.Synth, {
+  //       envelope: {
+  //         attack: 0.02,
+  //         decay: 0.1,
+  //         sustain: 0.3,
+  //         release: 1,
+  //       },
+  //     }).toDestination();
+  //     synths.push(synth);
+  //     //schedule all of the events
+  //     track.notes.forEach((note) => {
+  //       // console.log(note);
+  //       synth.triggerAttackRelease(
+  //         note.name,
+  //         note.duration,
+  //         note.time + now,
+  //         note.velocity
+  //       );
+  //     });
+  //     // }
+  //   });
+  //   console.log(synths);
+  // }, [midi]);
 
   console.log(midi);
   return (
@@ -164,7 +190,7 @@ const Home = () => {
             onChange={handleChangeFile}
           />
         </IonItem>
-        {/* <IonButton onClick={handleClick}>再生</IonButton> */}
+        <IonButton onClick={handleClick}>再生</IonButton>
       </IonContent>
     </IonPage>
   );
