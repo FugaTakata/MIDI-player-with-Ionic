@@ -1,0 +1,7 @@
+{
+  "name": "zettai",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
