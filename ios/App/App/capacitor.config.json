@@ -1,0 +1,6 @@
+{
+	"appId": "io.ionic.starter",
+	"appName": "zettai",
+	"webDir": "build",
+	"bundledWebRuntime": false
+}

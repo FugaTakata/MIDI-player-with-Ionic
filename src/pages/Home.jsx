@@ -12,10 +12,13 @@ import {
 import { useEffect, useRef, useState } from "react";
 import * as Tone from "tone";
 import { Midi } from "@tonejs/midi";
-
+import ReactAudioPlayer from "react-audio-player";
+import Base64Downloader from "react-base64-downloader";
+import * as fs from "fs";
 const Home = () => {
   const midiRef = useRef(null);
   const [midi, setMidi] = useState(null);
+  const [url, setUrl] = useState(null);
 
   const handleChangeFile = (e) => {
     const file = e.target.files[0];
@@ -94,6 +97,58 @@ const Home = () => {
     });
   };
 
+  useEffect(() => {
+    (async () => {
+      // const res = await fetch("/furusato.mid");
+      const res = await fetch("/Air_on_the_G_String.mp3");
+      const reader = new FileReader();
+      const b = await res.blob();
+      reader.readAsDataURL(b);
+      // reader.readAsArrayBuffer(b);
+      reader.onload = (e) => {
+        const midiData = e.target.result;
+        if (midiData) {
+          // const midi = new Midi(midiData);
+          console.log(midiData);
+          setMidi(midiData);
+          setUrl(URL.createObjectURL(toBlob(midiData)));
+        }
+      };
+      reader.onerror = (e) => {
+        console.error(e);
+      };
+      // const data = await res.json();
+      // const binary_string = window.atob(data.data);
+      // const len = binary_string.length;
+      // const bytes = new Uint8Array(len);
+      // for (let i = 0; i < len; i++) {
+      //   bytes[i] = binary_string.charCodeAt(i);
+      // }
+      // setMidi(data.data);
+      // console.log(await res.json());
+      // const res = await fetch("/Air_on_the_G_String.mp3");
+      // const arrayBuffer = await res.arrayBuffer();
+      // const audioBuffer = await audioContext.current.decodeAudioData(arrayBuffer);
+      // console.log(audioBuffer);
+      // setAudioBuffer(audioBuffer);
+    })();
+  }, []);
+  function toBlob(base64) {
+    var bin = atob(base64.replace(/^.*,/, ""));
+    var buffer = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) {
+      buffer[i] = bin.charCodeAt(i);
+    }
+    // Blobを作成
+    try {
+      var blob = new Blob([buffer.buffer], {
+        type: "audio/midi",
+      });
+    } catch (e) {
+      return false;
+    }
+    return blob;
+  }
   // useEffect(() => {
   //   (async () => {
   //     const res = await fetch("/furusato.json");
@@ -192,6 +247,26 @@ const Home = () => {
           />
         </IonItem>
         <IonButton onClick={handleClick}>再生</IonButton>
+        <ReactAudioPlayer src={midi} autoPlay controls />
+        {/* <Base64Downloader base64={midi} downloadName="1x1_red_pixel">
+          Click to download
+        </Base64Downloader> */}
+        <IonButton
+          onClick={() => {
+            fs.writeFileSync(
+              "file.ogg",
+              Buffer.from(
+                midi.replace("data:audio/ogg; codecs=opus;base64,", ""),
+                "base64"
+              )
+            );
+          }}
+        >
+          fu
+        </IonButton>
+        <a id="link4" download="hello.mid" href={url} target="_blank">
+          Blob URLs(JSON)
+        </a>
       </IonContent>
     </IonPage>
   );
