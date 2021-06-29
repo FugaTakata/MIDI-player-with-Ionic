@@ -17,7 +17,7 @@ import { useState } from "react";
 
 import ReactAudioPlayer from "react-audio-player";
 
-const API_ENDPOINT = "api url";
+const API_ENDPOINT = "http://127.0.0.1:8888/";
 
 const Home = () => {
   const [url, setUrl] = useState(null);
@@ -39,12 +39,9 @@ const Home = () => {
     const res = await fetch(API_ENDPOINT, {
       method: "POST",
       body: formData,
-      headers: {
-        "Content-Type": "audio/midi",
-      },
     });
 
-    console.log("response status code", res.status);
+    // console.log("response status code", res.status);
 
     const blob = await res.blob();
     const reader = new FileReader();
@@ -101,7 +98,7 @@ const Home = () => {
             <IonCardTitle>再生</IonCardTitle>
           </IonCardHeader>
           <IonCardContent>
-            <ReactAudioPlayer src={mp3} autoPlay controls />
+            <ReactAudioPlayer src={mp3} controls />
           </IonCardContent>
         </IonCard>
 
@@ -111,24 +108,23 @@ const Home = () => {
           </IonCardHeader>
           <IonCardContent>
             <IonItem>
-              <IonLabel position="floating">出力ファイル名を入力</IonLabel>
+              <IonLabel position="stacked">ファイル名を入力</IonLabel>
               <IonInput
                 onIonChange={(e) => setFileName(e.target.value)}
                 value={fileName}
               />
             </IonItem>
-            <a
+            <IonButton
+              disabled={!fileName}
               download={
                 (fileName.replaceAll(".", "")
                   ? fileName.replaceAll(".", "")
                   : "zettai-onkan") + ".mp3"
               }
               href={url}
-              target="_blank"
-              rel="noreferrer"
             >
-              mp3をダウンロード
-            </a>
+              ダウンロード
+            </IonButton>
           </IonCardContent>
         </IonCard>
       </IonContent>
